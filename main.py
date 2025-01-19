@@ -228,7 +228,7 @@ def find_location(lat, lon):
 
 async def handle_output(d, jns):
     cfg = read_config()
-
+    print('msk')
     th = cfg.getboolean('base', 'threshold')
 
     lat = float(cfg['base']['lume_lat'])
@@ -287,10 +287,14 @@ async def filter_event(msg):
     dat = msg['data']
     cfg = read_config()
     test = cfg.getboolean('base', 'receive_test')
+    print('1')
 
     dtime = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+    print('2')
     
     if test and msg['type'] == 'eew-test':
+        print('3')
+
         d = {
             "eew_id": dat['identifier'],
             "dtime": dtime,
@@ -301,6 +305,9 @@ async def filter_event(msg):
             "mag": float(dat['magnitude'])
 
         }
+
+        print('ll :  ', d)
+
 
         await handle_output(d, msg['type'])
     
