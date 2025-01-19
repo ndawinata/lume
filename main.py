@@ -18,6 +18,15 @@ import os
 import asyncpg
 import httpx
 import uvicorn
+import RPi.GPIO as GPIO
+import time
+
+# Konfigurasi pin GPIO
+LED_PIN = 23  # GPIO17 (pin 11)
+
+# Setup
+GPIO.setmode(GPIO.BCM)  # Gunakan penomoran GPIO (BCM)
+GPIO.setup(LED_PIN, GPIO.OUT)  # Atur GPIO sebagai output
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -248,14 +257,18 @@ async def handle_output(d, jns):
 
 
     djson = genOutput(dd)
-
-    if jns == 'pgn' or jns == 'pgn-test' :
-        d['pgn_id'] = djson['earthquake']['event']['id'] 
-    if jns == 'eew' or jns == 'eew-test' :  
-        d['eew_id'] = djson['earthquake']['event']['id']
+    
+    d['eew_id'] = djson['earthquake']['event']['id']
     
     serial = config.getboolean('output', 'serial')
     if d['lat'] <= lat_max and d['lat'] >= lat_min and d['lon'] <= lon_max and d['lon'] >= lon_min:
+        for i in range(5):
+            GPIO.output(LED_PIN, GPIO.HIGH)
+            time.sleep(2)  # LED menyala selama 5 detik
+
+            GPIO.output(LED_PIN, GPIO.LOW)
+            time.sleep(1)
+            
         if th:
             if mag >= mag_th and MMI >= mmi_th and PGA >= pga_th:
 
