@@ -268,7 +268,7 @@ async def handle_output(d, jns):
 
             GPIO.output(LED_PIN, GPIO.LOW)
             time.sleep(1)
-            
+
         if th:
             if mag >= mag_th and MMI >= mmi_th and PGA >= pga_th:
 
@@ -283,6 +283,7 @@ async def handle_output(d, jns):
 
 
 async def filter_event(msg):
+    print(msg)
     dat = msg['data']
     cfg = read_config()
     test = cfg.getboolean('base', 'receive_test')
@@ -360,9 +361,6 @@ connections = set()
 async def listen_to_external_server():
     websocket_url = f"wss://{source}/ws_data"  # Replace with your WebSocket server URL
     retry_delay = 1  # Initial delay in seconds for retries
-    cfg = read_config()
-    warn = cfg.getboolean('base', 'warn_disconnect')
-    disconalarm = f'{base_path}/static/sound/disconnect.wav'
 
     while True:
         try:
@@ -386,8 +384,7 @@ async def listen_to_external_server():
                         break  # Exit inner loop to reconnect
         except Exception as e:
             print(f"Failed to connect: {e}. Retrying in {retry_delay} seconds...")
-            if warn:
-                subprocess.Popen(["aplay", disconalarm])
+            
             for connection in connections:
                 # await connection.send_json({'data':False,'type':'ws_svr'})
                 await connection.send_json({'earthquake':{'type':'ws_svr','event':False}})
