@@ -1,0 +1,77 @@
+.params {
+    position: absolute;
+    top: 52px; 
+    left: 10px; 
+    /* width: 289px; 
+    height: 230px; */
+    background-color: rgba(255, 255, 255, 0.825);
+    padding: 15px;
+    /* border: 1px solid #ffffff; */
+    z-index: 1000;
+    color: rgb(0, 0, 0);
+    /* text-align: center; */
+    border-radius: 15px;
+    /* display: inline-block; */
+    /* display: flex;
+    flex-wrap: wrap; */
+}
+
+.kodeP {
+    /* border-radius: 15px; */
+    padding: 4px;
+    text-align: center;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    background-color:rgb(46, 79, 79); 
+    color:#fff;
+}
+
+.tb1 {
+    /* padding: 10px; */
+    /* background-color: #fff; */
+    border-radius: 15px;
+    border-width: 3px;
+    border-style: dashed;
+    border-color: #181d31;
+    /* padding: 10px; */
+}
+
+.sp {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+
+.tbl1 {
+    /* background-color: #fff; */
+    color: #181d31;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    display: inline-block;
+  }
+
+.text-label {
+    font-size: 9px;
+    font-weight: bold;
+    color: #000000; /* Warna teks */
+    text-align: center;
+}
+
+.text-marker {
+    font-weight: bold;
+    color: #000000;
+    border-radius: 5px;
+    padding: 5px;
+    text-align: center;
+}
+
+.cluster-icon {
+    font-size: 16px;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.2);;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

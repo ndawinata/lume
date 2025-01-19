@@ -1,0 +1,37 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+<title>UniRec | Detail</title>
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="/static/css/L.Icon.Pulse.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.awesome-markers@2.0.5/dist/leaflet.awesome-markers.min.css">
+<link rel="stylesheet" href="/static/css/style_dash.css" />
+<link rel="stylesheet" href="/static/css/detail.css" />
+
+{% endblock %}
+
+
+{% block js_head %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="/static/js/leaflet-svg-shape-markers.min.js"></script>
+{% endblock %}
+
+
+{% block js_foot %}
+<script src="https://cdn.jsdelivr.net/npm/leaflet.awesome-markers@2.0.5/dist/leaflet.awesome-markers.min.js" integrity="sha256-IqiRR5X1QtAdcq5lG4vBB1/WxwrRCkkjno4pfvWyag0=" crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="/static/js/L.Icon.Pulse.js"></script>
+<script>
+  let data = JSON.parse('{{ data|tojson|escape }}')
+</script>
+<script src="/static/js/detail.js"></script>
+{% endblock %}
+
+
+{% block content %}
+<div id="map" class="map-container"></div>
+
+{% endblock %}

@@ -1,0 +1,168 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+<title>UniRec | Universal Receiver EEWS</title>
+{% endblock %}
+
+{% block css %}
+<!-- JSZip (Required for CSV and Excel export) -->
+<link rel="stylesheet" href="static/css/L.Icon.Pulse.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.awesome-markers@2.0.5/dist/leaflet.awesome-markers.min.css">
+<link rel="stylesheet" href="/static/css/style_dash.css" />
+<link rel="stylesheet" href="/static/css/menu.css" />
+
+{% endblock %}
+
+
+{% block js_head %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="/static/js/leaflet-svg-shape-markers.min.js"></script>
+{% endblock %}
+
+
+{% block js_foot %}
+<script src="https://cdn.jsdelivr.net/npm/leaflet.awesome-markers@2.0.5/dist/leaflet.awesome-markers.min.js" integrity="sha256-IqiRR5X1QtAdcq5lG4vBB1/WxwrRCkkjno4pfvWyag0=" crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="/static/js/L.Icon.Pulse.js"></script>
+<script>
+  let ur_lat = parseFloat('{{ ur_lat }}')
+  let ur_lon = parseFloat('{{ ur_lon }}')
+  let lok = '{{ lok }}'
+  let r = parseFloat('{{ r }}')
+
+  var int1 = L.icon({
+      iconUrl: "/static/img/int1.svg",
+      iconSize: [18, 18],
+  });
+
+  var int2 = L.icon({
+      iconUrl: "/static/img/int2.svg",
+      iconSize: [18, 18],
+  });
+
+  var int3 = L.icon({
+      iconUrl: "/static/img/int3.svg",
+      iconSize: [18, 18],
+  });
+
+  var int4 = L.icon({
+      iconUrl: "/static/img/int4.svg",
+      iconSize: [18, 18],
+  });
+
+  var int5 = L.icon({
+      iconUrl: "/static/img/int5.svg",
+      iconSize: [18, 18],
+  });
+
+  var int6 = L.icon({
+      iconUrl: "/static/img/int6.svg",
+      iconSize: [18, 18],
+  });
+
+  var int7 = L.icon({
+      iconUrl: "/static/img/int7.svg",
+      iconSize: [18, 18],
+  });
+
+  var int8 = L.icon({
+      iconUrl: "/static/img/int8.svg",
+      iconSize: [18, 18],
+  });
+
+  var int9 = L.icon({
+      iconUrl: "/static/img/int9.svg",
+      iconSize: [18, 18],
+  });
+
+  var int10 = L.icon({
+      iconUrl: "/static/img/int10.svg",
+      iconSize: [18, 18],
+  });
+
+  var int11 = L.icon({
+      iconUrl: "/static/img/int11.svg",
+      iconSize: [18, 18],
+  });
+
+  var int12 = L.icon({
+      iconUrl: "/static/img/int12.svg",
+      iconSize: [18, 18],
+  });
+</script>
+<script src="/static/js/script.js"></script>
+<script src="/static/js/menu.js"></script>
+{% endblock %}
+
+
+{% block content %}
+<div id="map" class="map-container"></div>
+<div class="modal fade" id="locationModal" tabindex="-1" aria-labelledby="locationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="locationModalLabel">Set Your Location</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" title="Tutup"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="latitude" class="form-label">Latitude</label>
+              <input type="number" value="" class="form-control" id="latitude1" placeholder="Enter Latitude">
+            </div>
+            <div class="mb-3">
+              <label for="longitude" class="form-label">Longitude</label>
+              <input type="number" value="" class="form-control" id="longitude1" placeholder="Enter Longitude">
+            </div>
+            <div class="mb-3">
+              <label for="radius" class="form-label">Radius (°)</label>
+              <input type="number" value="" class="form-control" id="radius1" placeholder="Enter Radius">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id="saveLocation">Save</button>
+        </div>
+      </div>
+    </div>
+</div>
+<div id="statWS">
+    <div class="mx-2 px-3 st1">
+      <i class="fa fa-check-circle ws1 green-color" aria-hidden="true" title="Status Websocket Epic"></i>
+      BMKG API
+    </div>
+    <div class="mx-2 px-3 st1">
+      <i class="fa fa-times-circle ws2 red-color" aria-hidden="true" title="Status Websocket Epic"></i>
+      Local API
+    </div>
+</div>
+<!-- Menu -->
+<div class="icon-container">
+
+    <img src="https://cdn.jsdelivr.net/gh/Rian201196/image@820f38ccb33e35a7a4e2018c2f459d83854ec91f/auto-focus.png" class="icon" alt="Focus Icon" id="focusIcon" title="Area Interest" />
+    <div class="icon-popup history-popup">Area Interest</div>
+
+    <img src="/static/img/setting.png" class="icon" alt="Setting Icon" id="settingIcon" title="Setting History" />
+    <div class="icon-popup history-popup">Settings</div>
+</div>
+
+<div id="boxmmi">
+  <div class="boxatas">
+    <div class="headmmi ats1"><h6 class="txtjdl">MMI Est.</h6></div>
+    <div ><div class="txtmmi ats2" id="mmi">5</div><div class="txtp" id="params">Mag : <span class="txtblue">5</span>  Depth: <span class="txtblue">100</span> km</div></div>
+  </div>
+  <div class="boxbwh">
+    <div class="bwh1" ><div class="txts" id="dtk">25</div><div class="txtp">Est. S-Wave Arrival <span class="est">25</span></div></div>
+  </div>
+  <div class="boxbwh">
+    <div class="bwh1" >
+      <div class="txts1" style="padding-top: 4px;" id="ot1">21 Nov 2024</div>
+      <div class="txts1" id="ot2">14:30:00 UTC</div>
+      <div class="txtp" style="margin-top: 4px;">Earthquake Time</div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
