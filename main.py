@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, WebSocket
+from fastapi import FastAPI, Request, WebSocket, BackgroundTasks
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
@@ -260,41 +260,32 @@ def buzzer_off():
     # Fungsi untuk mematikan buzzer
     GPIO.output(BUZZER_PIN, GPIO.LOW)
 
-def aman():
-    # Kategori Aman: Lampu Hijau (Tidak ada Buzzer)
+async def aman():
     buzzer_on()
     set_color((0, 255, 0))  # Hijau
-    time.sleep(3)
-
+    await asyncio.sleep(3)  # Non-blocking delay
     buzzer_off()
     set_color((0, 0, 0))
-    
 
-def peringatan(durasi):
-    # Kategori Peringatan: Lampu Kuning + Buzzer dengan ritme
-    start_time = time.time()
-    while time.time() - start_time < durasi:
-        # Kedip lambat
+async def peringatan(durasi):
+    start_time = datetime.now().timestamp()
+    while datetime.now().timestamp() - start_time < durasi:
         buzzer_on()
         set_color((255, 255, 0))
-        time.sleep(1)
-
+        await asyncio.sleep(1)
         buzzer_off()
         set_color((0, 0, 0))
-        time.sleep(1)
+        await asyncio.sleep(1)
 
-def bahaya(durasi):
-    # Kategori Bahaya: Lampu Merah + Buzzer dengan ritme cepat
-    start_time = time.time()
-    while time.time() - start_time < durasi:
-        # Kedip cepat
+async def bahaya(durasi):
+    start_time = datetime.now().timestamp()
+    while datetime.now().timestamp() - start_time < durasi:
         buzzer_on()
         set_color((255, 0, 0))
-        time.sleep(0.5)
-
+        await asyncio.sleep(0.5)
         buzzer_off()
         set_color((0, 0, 0))
-        time.sleep(0.5)
+        await asyncio.sleep(0.5)
 
 # warning tipe
     # suara dan lampu akan terus menyala looping sampai countdown habis + 20 detik
@@ -302,23 +293,20 @@ def bahaya(durasi):
     # 4-5 orange (warning) (255, 255, 0) buzzer t0.5 f1.5 loop until countdown end
     # > 5 merah (danger) (255, 0, 0) buzzer t0.5 f0.5 loop until countdown end
 
-def warn(mmi, ot, R):
+async def warn(mmi, ot, R):
     ctd = round(R / 4)
-
     originTime = datetime.strptime(ot, "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
     current_datetime = datetime.now(timezone.utc)
-
     time_difference = (current_datetime - originTime).total_seconds()
-
     durasi = ctd - time_difference
     print(mmi, durasi, R)
-    if durasi > 0 :
+    if durasi > 0:
         if mmi == 3:
-            aman()
-        if mmi > 3 and mmi < 6:
-            peringatan(durasi)
-        if mmi > 5:
-            bahaya(durasi)
+            await aman()
+        elif 3 < mmi < 6:
+            await peringatan(durasi)
+        elif mmi >= 6:
+            await bahaya(durasi)
 
 
 async def handle_output(d, jns):
@@ -359,12 +347,14 @@ async def handle_output(d, jns):
         if th:
             if mag >= mag_th and MMI >= mmi_th and PGA >= pga_th:
 
-                warn(MMI, d['ot'], R)
-
+                # warn(MMI, d['ot'], R)
+                BackgroundTasks.add_task(warn, MMI, d['ot'], R)
                 for connection in connections:
                     await connection.send_json(djson)
         else:
-            warn(MMI, d['ot'], R)
+            # warn(MMI, d['ot'], R)
+            BackgroundTasks.add_task(warn, MMI, d['ot'], R)
+
             for connection in connections:
                 await connection.send_json(djson)
 
