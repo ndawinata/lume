@@ -359,12 +359,12 @@ async def handle_output(d, jns):
         if th:
             if mag >= mag_th and MMI >= mmi_th and PGA >= pga_th:
 
-                warn(MMI, d['originTime'], R)
+                warn(MMI, d['ot'], R)
 
                 for connection in connections:
                     await connection.send_json(djson)
         else:
-            warn(MMI, d['originTime'], R)
+            warn(MMI, d['ot'], R)
             for connection in connections:
                 await connection.send_json(djson)
 
