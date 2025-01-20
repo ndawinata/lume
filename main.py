@@ -272,6 +272,11 @@ def aman():
     buzzer_off()
     time.sleep(1)
 
+    start_time = time.time()
+    print(start_time)
+    time.sleep(1)
+    print(time.time() - start_time)
+
 def peringatan(durasi):
     # Kategori Peringatan: Lampu Kuning + Buzzer dengan ritme
     start_time = time.time()
@@ -340,15 +345,15 @@ async def handle_output(d, jns):
     if d['lat'] <= lat_max and d['lat'] >= lat_min and d['lon'] <= lon_max and d['lon'] >= lon_min:
         
         # Contoh Penggunaan
-        print("Mode Aman\n")
+        print("\n\nMode Aman\n")
         aman()  # Looping selama 10 detik
         time.sleep(5)
 
-        print("Mode Peringatan\n")
+        print("\n\nMode Peringatan\n")
         peringatan(durasi=15)  # Looping selama 10 detik
 
         time.sleep(5)
-        print("Mode Bahaya\n")
+        print("\n\nMode Bahaya\n")
         bahaya(durasi=15)  # Looping selama 10 detik
 
         if th:
