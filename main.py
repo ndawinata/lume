@@ -274,6 +274,8 @@ async def aman():
     await buzzer_off()
     await set_color((0, 0, 0))
 
+    await normal()
+
 async def peringatan(durasi):
     # Kategori Peringatan: Lampu Kuning + Buzzer dengan ritme
     start_time = asyncio.get_event_loop().time()
@@ -285,6 +287,9 @@ async def peringatan(durasi):
         await buzzer_off()
         await set_color((0, 0, 0))
         await asyncio.sleep(1)
+    
+    await normal()
+
 
 async def bahaya(durasi):
     # Kategori Bahaya: Lampu Merah + Buzzer dengan ritme cepat
@@ -297,6 +302,9 @@ async def bahaya(durasi):
         await buzzer_off()
         await set_color((0, 0, 0))
         await asyncio.sleep(0.5)
+    
+    await normal()
+
 
 # warning tipe
     # suara dan lampu akan terus menyala looping sampai countdown habis + 15 detik
@@ -314,7 +322,7 @@ async def warn(mmi, ot, R):
     time_difference = (current_datetime - originTime).total_seconds()
 
     durasi = ctd - time_difference
-    print(mmi, durasi, R)
+    # print(mmi, durasi, R)
     if durasi > 0:
         if mmi == 3:
             await aman()
