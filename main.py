@@ -22,13 +22,13 @@ import RPi.GPIO as GPIO
 import time
 
 # Konfigurasi pin GPIO
-LED_PIN = 23  # GPIO17 (pin 11)
+BUZZER_PIN = 23  # GPIO17 (pin 11)
 
 # Setup
 GPIO.setwarnings(False)  # Gunakan penomoran GPIO (BCM)
 
 GPIO.setmode(GPIO.BCM)  # Gunakan penomoran GPIO (BCM)
-GPIO.setup(LED_PIN, GPIO.OUT)  # Atur GPIO sebagai output
+GPIO.setup(BUZZER_PIN, GPIO.OUT)  # Atur GPIO sebagai output
 
 
 
@@ -229,10 +229,83 @@ def find_location(lat, lon):
     
     return {"lokasi":nearest_location if nearest_location else "Location not found"}
 
+# warning tipe
+    # suara dan lampu akan terus menyala looping sampai countdown habis + 20 detik
+    # 3 hijau (aman) buzzer (0, 255, 0) buzzer t1 f1 t2 f1 t3 selesai
+    # 4-5 orange (warning) (255, 255, 0) buzzer t0.5 f1.5 loop until countdown end
+    # > 5 merah (danger) (255, 0, 0) buzzer t0.5 f0.5 loop until countdown end
+
+def set_color(rgb):
+    # Fungsi untuk mengatur warna lampu
+    print(f"Set warna lampu ke RGB: {rgb}")
+
+def buzzer_on():
+    # Fungsi untuk menyalakan buzzer
+    GPIO.output(BUZZER_PIN, GPIO.HIGH)
+    print("Buzzer ON")
+
+def buzzer_off():
+    # Fungsi untuk mematikan buzzer
+    GPIO.output(BUZZER_PIN, GPIO.LOW)
+    print("Buzzer OFF")
+
+def aman():
+    # Kategori Aman: Lampu Hijau (Tidak ada Buzzer)
+    set_color((0, 255, 0))  # Hijau
+    buzzer_on()
+    time.sleep(1)
+    set_color((0, 0, 0))
+    buzzer_off()
+    time.sleep(1)
+
+    set_color((0, 255, 0))  # Hijau
+    buzzer_on()
+    time.sleep(2)
+    set_color((0, 0, 0))
+    buzzer_off()
+    time.sleep(1)
+
+    set_color((0, 255, 0))  # Hijau
+    buzzer_on()
+    time.sleep(3)
+    set_color((0, 0, 0))
+    buzzer_off()
+    time.sleep(1)
+
+def peringatan(durasi):
+    # Kategori Peringatan: Lampu Kuning + Buzzer dengan ritme
+    start_time = time.time()
+    while time.time() - start_time < durasi:
+        # Kedip lambat
+        set_color((255, 255, 0))
+        time.sleep(1)
+        set_color((0, 0, 0))
+        time.sleep(1)
+        
+        # Bunyi Buzzer
+        buzzer_on()
+        time.sleep(0.5)
+        buzzer_off()
+        time.sleep(1.5)
+
+def bahaya(durasi):
+    # Kategori Bahaya: Lampu Merah + Buzzer dengan ritme cepat
+    start_time = time.time()
+    while time.time() - start_time < durasi:
+        # Kedip cepat
+        set_color((255, 0, 0))
+        time.sleep(0.5)
+        set_color((0, 0, 0))
+        time.sleep(0.5)
+        
+        # Bunyi Buzzer
+        buzzer_on()
+        time.sleep(0.5)
+        buzzer_off()
+        time.sleep(0.5)
 
 async def handle_output(d, jns):
     cfg = read_config()
-    print('msk')
     th = cfg.getboolean('base', 'threshold')
 
     lat = float(cfg['base']['lume_lat'])
@@ -261,17 +334,20 @@ async def handle_output(d, jns):
 
 
     djson = genOutput(dd)
-    print('djson : ',djson)
     
     d['eew_id'] = djson['earthquake']['event']['id']
     
     if d['lat'] <= lat_max and d['lat'] >= lat_min and d['lon'] <= lon_max and d['lon'] >= lon_min:
-        for i in range(5):
-            GPIO.output(LED_PIN, GPIO.HIGH)
-            time.sleep(2)  # LED menyala selama 5 detik
+        
+        # Contoh Penggunaan
+        print("Mode Aman")
+        aman(durasi=10)  # Looping selama 10 detik
 
-            GPIO.output(LED_PIN, GPIO.LOW)
-            time.sleep(1)
+        print("Mode Peringatan")
+        peringatan(durasi=10)  # Looping selama 10 detik
+
+        print("Mode Bahaya")
+        bahaya(durasi=10)  # Looping selama 10 detik
 
         if th:
             if mag >= mag_th and MMI >= mmi_th and PGA >= pga_th:
@@ -287,17 +363,13 @@ async def handle_output(d, jns):
 
 
 async def filter_event(msg):
-    print(msg)
     dat = msg['data']
     cfg = read_config()
     test = cfg.getboolean('base', 'receive_test')
-    print('1')
 
     dtime = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
-    print('2')
     
     if test and msg['type'] == 'eew-test':
-        print('3')
 
         d = {
             "eew_id": dat['identifier'],
@@ -309,9 +381,6 @@ async def filter_event(msg):
             "mag": float(dat['magnitude'])
 
         }
-
-        print('ll :  ', d)
-
 
         await handle_output(d, msg['type'])
     
