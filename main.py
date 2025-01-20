@@ -311,7 +311,7 @@ def warn(mmi, ot, R):
     time_difference = (current_datetime - originTime).total_seconds()
 
     durasi = ctd - time_difference
-
+    print(mmi, durasi, R)
     if durasi > 0 :
         if mmi == 3:
             aman()
