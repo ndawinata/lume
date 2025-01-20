@@ -293,12 +293,13 @@ async def bahaya(durasi):
         await asyncio.sleep(0.5)
 
 # warning tipe
-    # suara dan lampu akan terus menyala looping sampai countdown habis + 20 detik
+    # suara dan lampu akan terus menyala looping sampai countdown habis + 15 detik
     # 3 hijau (aman) buzzer (0, 255, 0) buzzer t1 f1 t2 f1 t3 selesai
     # 4-5 orange (warning) (255, 255, 0) buzzer t0.5 f1.5 loop until countdown end
     # > 5 merah (danger) (255, 0, 0) buzzer t0.5 f0.5 loop until countdown end
 
 async def warn(mmi, ot, R):
+    tambahan_detik = 15
     ctd = round(R / 4)
 
     originTime = datetime.strptime(ot, "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
@@ -312,9 +313,9 @@ async def warn(mmi, ot, R):
         if mmi == 3:
             await aman()
         elif 3 < mmi < 6:
-            await peringatan(durasi)
+            await peringatan(durasi + tambahan_detik)
         elif mmi >= 6:
-            await bahaya(durasi)
+            await bahaya(durasi + tambahan_detik)
 
 
 async def handle_output(d, jns):
