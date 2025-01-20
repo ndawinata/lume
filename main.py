@@ -246,11 +246,6 @@ def find_location(lat, lon):
     
     return {"lokasi":nearest_location if nearest_location else "Location not found"}
 
-# warning tipe
-    # suara dan lampu akan terus menyala looping sampai countdown habis + 20 detik
-    # 3 hijau (aman) buzzer (0, 255, 0) buzzer t1 f1 t2 f1 t3 selesai
-    # 4-5 orange (warning) (255, 255, 0) buzzer t0.5 f1.5 loop until countdown end
-    # > 5 merah (danger) (255, 0, 0) buzzer t0.5 f0.5 loop until countdown end
 
 def set_color(rgb):
     # Fungsi untuk mengatur warna lampu
@@ -260,12 +255,10 @@ def set_color(rgb):
 def buzzer_on():
     # Fungsi untuk menyalakan buzzer
     GPIO.output(BUZZER_PIN, GPIO.HIGH)
-    print("Buzzer ON")
 
 def buzzer_off():
     # Fungsi untuk mematikan buzzer
     GPIO.output(BUZZER_PIN, GPIO.LOW)
-    print("Buzzer OFF")
 
 def aman():
     # Kategori Aman: Lampu Hijau (Tidak ada Buzzer)
@@ -289,12 +282,6 @@ def peringatan(durasi):
         buzzer_off()
         set_color((0, 0, 0))
         time.sleep(1)
-        
-        # # Bunyi Buzzer
-        # buzzer_on()
-        # time.sleep(0.5)
-        # buzzer_off()
-        # time.sleep(1.5)
 
 def bahaya(durasi):
     # Kategori Bahaya: Lampu Merah + Buzzer dengan ritme cepat
@@ -308,12 +295,31 @@ def bahaya(durasi):
         buzzer_off()
         set_color((0, 0, 0))
         time.sleep(0.5)
-        
-        # # Bunyi Buzzer
-        # buzzer_on()
-        # time.sleep(0.5)
-        # buzzer_off()
-        # time.sleep(0.5)
+
+# warning tipe
+    # suara dan lampu akan terus menyala looping sampai countdown habis + 20 detik
+    # 3 hijau (aman) buzzer (0, 255, 0) buzzer t1 f1 t2 f1 t3 selesai
+    # 4-5 orange (warning) (255, 255, 0) buzzer t0.5 f1.5 loop until countdown end
+    # > 5 merah (danger) (255, 0, 0) buzzer t0.5 f0.5 loop until countdown end
+
+def warn(mmi, ot, R):
+    ctd = round(R / 4)
+
+    originTime = datetime.strptime(ot, "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
+    current_datetime = datetime.now(timezone.utc)
+
+    time_difference = (current_datetime - originTime).total_seconds()
+
+    durasi = ctd - time_difference
+
+    if durasi > 0 :
+        if mmi == 3:
+            aman()
+        if mmi > 3 and mmi < 6:
+            peringatan(durasi)
+        if mmi > 5:
+            bahaya(durasi)
+
 
 async def handle_output(d, jns):
     cfg = read_config()
@@ -349,28 +355,16 @@ async def handle_output(d, jns):
     d['eew_id'] = djson['earthquake']['event']['id']
     
     if d['lat'] <= lat_max and d['lat'] >= lat_min and d['lon'] <= lon_max and d['lon'] >= lon_min:
-        
-        # Contoh Penggunaan
-        print("\n\nMode Aman\n")
-        aman()  # Looping selama 10 detik
-        time.sleep(5)
-
-        print("\n\nMode Peringatan\n")
-        peringatan(durasi=15)  # Looping selama 10 detik
-
-        time.sleep(5)
-        print("\n\nMode Bahaya\n")
-        bahaya(durasi=15)  # Looping selama 10 detik
 
         if th:
             if mag >= mag_th and MMI >= mmi_th and PGA >= pga_th:
 
-                djson['earthquake']['impact'] = {"mmi":MMI, "pga":PGA}
+                warn(MMI, d['originTime'], R)
 
                 for connection in connections:
                     await connection.send_json(djson)
         else:
-
+            warn(MMI, d['originTime'], R)
             for connection in connections:
                 await connection.send_json(djson)
 
