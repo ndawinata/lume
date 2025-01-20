@@ -340,14 +340,16 @@ async def handle_output(d, jns):
     if d['lat'] <= lat_max and d['lat'] >= lat_min and d['lon'] <= lon_max and d['lon'] >= lon_min:
         
         # Contoh Penggunaan
-        print("Mode Aman")
+        print("Mode Aman\n")
         aman()  # Looping selama 10 detik
+        time.sleep(5)
 
-        print("Mode Peringatan")
-        peringatan(durasi=10)  # Looping selama 10 detik
+        print("Mode Peringatan\n")
+        peringatan(durasi=15)  # Looping selama 10 detik
 
-        print("Mode Bahaya")
-        bahaya(durasi=10)  # Looping selama 10 detik
+        time.sleep(5)
+        print("Mode Bahaya\n")
+        bahaya(durasi=15)  # Looping selama 10 detik
 
         if th:
             if mag >= mag_th and MMI >= mmi_th and PGA >= pga_th:
