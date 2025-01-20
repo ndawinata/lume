@@ -20,6 +20,8 @@ import httpx
 import uvicorn
 import RPi.GPIO as GPIO
 import time
+import board
+import neopixel
 
 # Konfigurasi pin GPIO
 BUZZER_PIN = 23  # GPIO17 (pin 11)
@@ -30,6 +32,21 @@ GPIO.setwarnings(False)  # Gunakan penomoran GPIO (BCM)
 GPIO.setmode(GPIO.BCM)  # Gunakan penomoran GPIO (BCM)
 GPIO.setup(BUZZER_PIN, GPIO.OUT)  # Atur GPIO sebagai output
 
+# NeoPixels must be connected to D10, D12, D18 or D21 to work.
+PIXEL_PIN = board.D12
+
+
+# The number of NeoPixels
+NUM_PIXELS = 32
+
+# The order of the pixel colors - RGB or GRB. Some NeoPixels have red and green reversed!
+# For RGBW NeoPixels, simply change the ORDER to RGBW or GRBW.
+# GRB  : Green Red Blue
+# GRBW : Green Red Blue White
+ORDER = neopixel.GRB
+
+# brightness(float) : between 0.0 and 1.0 where is 1.0 full brightness
+pixels = neopixel.NeoPixel(PIXEL_PIN, NUM_PIXELS, brightness=1, auto_write=False, pixel_order=ORDER)
 
 
 @asynccontextmanager
@@ -237,7 +254,8 @@ def find_location(lat, lon):
 
 def set_color(rgb):
     # Fungsi untuk mengatur warna lampu
-    print(f"Set warna lampu ke RGB: {rgb}")
+    pixels.fill(rgb)
+    pixels.show()
 
 def buzzer_on():
     # Fungsi untuk menyalakan buzzer
@@ -253,29 +271,10 @@ def aman():
     # Kategori Aman: Lampu Hijau (Tidak ada Buzzer)
     set_color((0, 255, 0))  # Hijau
     buzzer_on()
-    time.sleep(1)
-    set_color((0, 0, 0))
-    buzzer_off()
-    time.sleep(1)
-
-    set_color((0, 255, 0))  # Hijau
-    buzzer_on()
-    time.sleep(2)
-    set_color((0, 0, 0))
-    buzzer_off()
-    time.sleep(1)
-
-    set_color((0, 255, 0))  # Hijau
-    buzzer_on()
     time.sleep(3)
     set_color((0, 0, 0))
     buzzer_off()
-    time.sleep(1)
-
-    start_time = time.time()
-    print(start_time)
-    time.sleep(1)
-    print(time.time() - start_time)
+    
 
 def peringatan(durasi):
     # Kategori Peringatan: Lampu Kuning + Buzzer dengan ritme
