@@ -1,0 +1,18 @@
+[Unit]
+Description=Lume Service
+After=network.target
+
+[Service]
+Type=simple
+# Jalankan dengan sudo dan python di virtual environment
+ExecStart=/usr/bin/sudo /home/sysop/LUME/lumeenv/bin/python /home/sysop/lume/main.py
+WorkingDirectory=/home/sysop/lume
+User=root
+Group=root
+Environment="PATH=/home/sysop/LUME/lumeenv/bin"
+StandardOutput=append:/var/log/lume.log
+StandardError=append:/var/log/lume.log
+#Restart=always
+
+[Install]
+WantedBy=multi-user.target

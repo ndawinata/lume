@@ -274,7 +274,7 @@ async def peringatan(durasi):
     while asyncio.get_event_loop().time() - start_time < durasi:
         # Kedip lambat
         await buzzer_on()
-        await set_color((255, 255, 0))
+        await set_color((255, 127, 0))
         await asyncio.sleep(1)
         await buzzer_off()
         await set_color((0, 0, 0))
