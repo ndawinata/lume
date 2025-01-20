@@ -247,44 +247,49 @@ def find_location(lat, lon):
     return {"lokasi":nearest_location if nearest_location else "Location not found"}
 
 
-def set_color(rgb):
+async def set_color(rgb):
     # Fungsi untuk mengatur warna lampu
     pixels.fill(rgb)
     pixels.show()
 
-def buzzer_on():
+async def buzzer_on():
     # Fungsi untuk menyalakan buzzer
     GPIO.output(BUZZER_PIN, GPIO.HIGH)
 
-def buzzer_off():
+async def buzzer_off():
     # Fungsi untuk mematikan buzzer
     GPIO.output(BUZZER_PIN, GPIO.LOW)
 
 async def aman():
-    buzzer_on()
-    set_color((0, 255, 0))  # Hijau
-    await asyncio.sleep(3)  # Non-blocking delay
-    buzzer_off()
-    set_color((0, 0, 0))
+    # Kategori Aman: Lampu Hijau (Tidak ada Buzzer)
+    await buzzer_on()
+    await set_color((0, 255, 0))  # Hijau
+    await asyncio.sleep(3)
+    await buzzer_off()
+    await set_color((0, 0, 0))
 
 async def peringatan(durasi):
-    start_time = datetime.now().timestamp()
-    while datetime.now().timestamp() - start_time < durasi:
-        buzzer_on()
-        set_color((255, 255, 0))
+    # Kategori Peringatan: Lampu Kuning + Buzzer dengan ritme
+    start_time = asyncio.get_event_loop().time()
+    while asyncio.get_event_loop().time() - start_time < durasi:
+        # Kedip lambat
+        await buzzer_on()
+        await set_color((255, 255, 0))
         await asyncio.sleep(1)
-        buzzer_off()
-        set_color((0, 0, 0))
+        await buzzer_off()
+        await set_color((0, 0, 0))
         await asyncio.sleep(1)
 
 async def bahaya(durasi):
-    start_time = datetime.now().timestamp()
-    while datetime.now().timestamp() - start_time < durasi:
-        buzzer_on()
-        set_color((255, 0, 0))
+    # Kategori Bahaya: Lampu Merah + Buzzer dengan ritme cepat
+    start_time = asyncio.get_event_loop().time()
+    while asyncio.get_event_loop().time() - start_time < durasi:
+        # Kedip cepat
+        await buzzer_on()
+        await set_color((255, 0, 0))
         await asyncio.sleep(0.5)
-        buzzer_off()
-        set_color((0, 0, 0))
+        await buzzer_off()
+        await set_color((0, 0, 0))
         await asyncio.sleep(0.5)
 
 # warning tipe
@@ -295,9 +300,12 @@ async def bahaya(durasi):
 
 async def warn(mmi, ot, R):
     ctd = round(R / 4)
+
     originTime = datetime.strptime(ot, "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
     current_datetime = datetime.now(timezone.utc)
+
     time_difference = (current_datetime - originTime).total_seconds()
+
     durasi = ctd - time_difference
     print(mmi, durasi, R)
     if durasi > 0:
@@ -348,12 +356,12 @@ async def handle_output(d, jns):
             if mag >= mag_th and MMI >= mmi_th and PGA >= pga_th:
 
                 # warn(MMI, d['ot'], R)
-                BackgroundTasks.add_task(warn, MMI, d['ot'], R)
+                asyncio.create_task(warn(MMI, d['ot'], R))
                 for connection in connections:
                     await connection.send_json(djson)
         else:
             # warn(MMI, d['ot'], R)
-            BackgroundTasks.add_task(warn, MMI, d['ot'], R)
+            asyncio.create_task(warn(MMI, d['ot'], R))
 
             for connection in connections:
                 await connection.send_json(djson)
