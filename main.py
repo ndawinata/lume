@@ -25,8 +25,12 @@ import time
 LED_PIN = 23  # GPIO17 (pin 11)
 
 # Setup
+GPIO.setwarnings(False)  # Gunakan penomoran GPIO (BCM)
+
 GPIO.setmode(GPIO.BCM)  # Gunakan penomoran GPIO (BCM)
 GPIO.setup(LED_PIN, GPIO.OUT)  # Atur GPIO sebagai output
+
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -254,6 +258,7 @@ async def handle_output(d, jns):
         'data':d,
         'type':jns
     }
+    print('dd : ',dd)
 
 
     djson = genOutput(dd)
