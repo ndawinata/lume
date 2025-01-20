@@ -48,6 +48,9 @@ ORDER = neopixel.GRB
 # brightness(float) : between 0.0 and 1.0 where is 1.0 full brightness
 pixels = neopixel.NeoPixel(PIXEL_PIN, NUM_PIXELS, brightness=1, auto_write=False, pixel_order=ORDER)
 
+pixels.fill((255, 255, 255))
+pixels.show()
+time.sleep(1)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -260,13 +263,6 @@ async def buzzer_on():
 async def buzzer_off():
     # Fungsi untuk mematikan buzzer
     GPIO.output(BUZZER_PIN, GPIO.LOW)
-
-def normal_mode():
-    # Kategori Aman: Lampu Hijau (Tidak ada Buzzer)
-    set_color((255, 255, 255))  # Hijau
-    time.sleep(1)
-
-normal_mode()
 
 async def aman():
     # Kategori Aman: Lampu Hijau (Tidak ada Buzzer)
