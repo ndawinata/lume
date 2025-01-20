@@ -269,11 +269,12 @@ def buzzer_off():
 
 def aman():
     # Kategori Aman: Lampu Hijau (Tidak ada Buzzer)
-    set_color((0, 255, 0))  # Hijau
     buzzer_on()
+    set_color((0, 255, 0))  # Hijau
     time.sleep(3)
-    set_color((0, 0, 0))
+
     buzzer_off()
+    set_color((0, 0, 0))
     
 
 def peringatan(durasi):
@@ -281,32 +282,38 @@ def peringatan(durasi):
     start_time = time.time()
     while time.time() - start_time < durasi:
         # Kedip lambat
+        buzzer_on()
         set_color((255, 255, 0))
         time.sleep(1)
+
+        buzzer_off()
         set_color((0, 0, 0))
         time.sleep(1)
         
-        # Bunyi Buzzer
-        buzzer_on()
-        time.sleep(0.5)
-        buzzer_off()
-        time.sleep(1.5)
+        # # Bunyi Buzzer
+        # buzzer_on()
+        # time.sleep(0.5)
+        # buzzer_off()
+        # time.sleep(1.5)
 
 def bahaya(durasi):
     # Kategori Bahaya: Lampu Merah + Buzzer dengan ritme cepat
     start_time = time.time()
     while time.time() - start_time < durasi:
         # Kedip cepat
+        buzzer_on()
         set_color((255, 0, 0))
         time.sleep(0.5)
+
+        buzzer_off()
         set_color((0, 0, 0))
         time.sleep(0.5)
         
-        # Bunyi Buzzer
-        buzzer_on()
-        time.sleep(0.5)
-        buzzer_off()
-        time.sleep(0.5)
+        # # Bunyi Buzzer
+        # buzzer_on()
+        # time.sleep(0.5)
+        # buzzer_off()
+        # time.sleep(0.5)
 
 async def handle_output(d, jns):
     cfg = read_config()
