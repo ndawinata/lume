@@ -258,14 +258,13 @@ async def handle_output(d, jns):
         'data':d,
         'type':jns
     }
-    print('dd : ',dd)
 
 
     djson = genOutput(dd)
+    print('djson : ',djson)
     
     d['eew_id'] = djson['earthquake']['event']['id']
     
-    serial = config.getboolean('output', 'serial')
     if d['lat'] <= lat_max and d['lat'] >= lat_min and d['lon'] <= lon_max and d['lon'] >= lon_min:
         for i in range(5):
             GPIO.output(LED_PIN, GPIO.HIGH)
