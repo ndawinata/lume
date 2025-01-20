@@ -341,7 +341,7 @@ async def handle_output(d, jns):
         
         # Contoh Penggunaan
         print("Mode Aman")
-        aman(durasi=10)  # Looping selama 10 detik
+        aman()  # Looping selama 10 detik
 
         print("Mode Peringatan")
         peringatan(durasi=10)  # Looping selama 10 detik
