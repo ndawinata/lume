@@ -56,6 +56,7 @@ async def lifespan(app: FastAPI):
     try:
         # Mulai aplikasi
         print("Aplikasi mulai")
+        await normal_mode()
         yield  # Bagian ini memungkinkan aplikasi untuk melanjutkan eksekusi
     finally:
         # Bersihkan tugas ketika aplikasi berhenti
@@ -259,6 +260,11 @@ async def buzzer_on():
 async def buzzer_off():
     # Fungsi untuk mematikan buzzer
     GPIO.output(BUZZER_PIN, GPIO.LOW)
+
+async def normal_mode():
+    # Kategori Aman: Lampu Hijau (Tidak ada Buzzer)
+    await set_color((255, 255, 255))  # Hijau
+    await asyncio.sleep(1)
 
 async def aman():
     # Kategori Aman: Lampu Hijau (Tidak ada Buzzer)
