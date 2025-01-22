@@ -37,7 +37,7 @@ PIXEL_PIN = board.D12
 
 
 # The number of NeoPixels
-NUM_PIXELS = 32
+NUM_PIXELS = 36
 
 # The order of the pixel colors - RGB or GRB. Some NeoPixels have red and green reversed!
 # For RGBW NeoPixels, simply change the ORDER to RGBW or GRBW.
@@ -58,7 +58,7 @@ async def lifespan(app: FastAPI):
     try:
         # Mulai aplikasi
         print("Aplikasi mulai")
-        asyncio.create_task(normal())
+        # asyncio.create_task(normal())
         
         yield  # Bagian ini memungkinkan aplikasi untuk melanjutkan eksekusi
     finally:
