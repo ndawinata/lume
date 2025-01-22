@@ -49,8 +49,12 @@ ORDER = neopixel.GRB
 pixels = neopixel.NeoPixel(PIXEL_PIN, NUM_PIXELS, brightness=1, auto_write=False, pixel_order=ORDER)
 
 async def normal():
-    # await set_color((255, 255, 255))  # putih
-    await set_color((0, 0, 0))  # mati
+    cfg = read_config()
+    light_mode = cfg.getboolean('base', 'light_mode')
+    if light_mode:
+        await set_color((255, 255, 255))  # putih
+    else:
+        await set_color((0, 0, 0))  # mati
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
